@@ -29,24 +29,7 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       return JSON.parse(storagedCart);
     }
 
-    return [
-      {
-        id: 1,
-        title: "Tênis de Caminhada Leve Confortável",
-        price: 179.9,
-        image:
-          "https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis1.jpg",
-        amount: 1,
-      },
-      {
-        id: 2,
-        title: "Tênis de Caminhada Leve Confortável",
-        price: 179.9,
-        image:
-          "https://rocketseat-cdn.s3-sa-east-1.amazonaws.com/modulo-redux/tenis1.jpg",
-        amount: 1,
-      },
-    ];
+    return [];
   });
 
   const addProduct = async (productId: number) => {
@@ -65,12 +48,47 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
 
         if (total > data.amount) {
           toast.error("Quantidade solicitada fora de estoque");
+          return
         }
 
-        console.log(data);
+        const newCart = cart.map((item) => {
+
+          if (item.id === productId) {
+            console.log(item)
+            return (
+              {
+                ...item,
+                amount: total
+              }
+            )
+          }
+          else return (item)
+        })
+
+        localStorage.setItem('@RocketShoes:cart', JSON.stringify(newCart));
+
+        setCart(newCart)
+
+        console.log(cart);
+        return
       }
+      console.log("não existe no carrinho!");
+      
       // guardar adicionando o amount
-    } catch {}
+      const { data }  =  await api.get<Product>(`products/${productId}`)
+
+      console.log(data)
+
+      const newCart = [...cart, {...data, amount: 1}];
+
+      localStorage.setItem('@RocketShoes:cart', JSON.stringify(newCart));
+
+      setCart(newCart)
+      
+
+    } catch { 
+      toast.error('Erro na adição do produto');
+    }
   };
 
   const removeProduct = (productId: number) => {
