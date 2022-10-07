@@ -28,7 +28,6 @@ const Home = (): JSX.Element => {
 
   console.log(cart)
 
-
   const cartItemsAmount = cart.reduce((sumAmount, product) => {
 
     if (sumAmount[product.id]) {
